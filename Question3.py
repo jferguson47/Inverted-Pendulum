@@ -72,12 +72,15 @@ b = -phi_deriv_x3_at_equlibrium
 c = -psi_deriv_F_at_equlibrium
 d = psi_deriv_x3_at_equlibrium
 
-
+# values from question
 
 M_value = 0.3
 m_value = 0.1
 ell_value = 0.35
 g_value = 9.81
+
+#substituting a, b, c, d values for values which include M, m, g, ell
+
 a_value = a.subs([(M, M_value), (m, m_value)])
 b_value = b.subs([(M, M_value), (m, m_value), (g, g_value)])
 c_value = c.subs([(M, M_value), (m, m_value), (g, g_value), (ell, ell_value)])
@@ -85,7 +88,7 @@ d_value = d.subs([(M, M_value), (m, m_value), (g, g_value), (ell, ell_value)])
 
 s, t = sym.symbols('s, t')
 c, d = sym.symbols('c, d', real=True, positive=True)
-
+w =sym.symbols('w', real=True)
 
 # --------------------------------1. Impulse, Step and frequency Response of G_theta -----------------------------------
 G_theta = - c / (s**2 - d)
@@ -95,22 +98,23 @@ G_theta = - c / (s**2 - d)
 
 # 1.1. Impulse response for G_theta
 # f_t = KICK (DIRAC PULSE) - impulse
+print('Impulse Response G_theta')
 Fs_impulse = 1                                 # Amplitude (A) = 1
 X3s_impulse = G_theta * Fs_impulse             # the inverse of G_theta will be the the impulse response of the system
 X3t_impulse = sym.inverse_laplace_transform(X3s_impulse, s, t)  # system output t domain
 sym.pprint(X3t_impulse)    # put in report
-print(sym.latex(X3t_impulse))
+print(sym.latex(X3t_impulse.simplify()))
 # 1.2. Step Response (PUSH) of G_theta: what is the system response when
 
 # the input is a step pulse (Heaviside function)
 
 # G = X / F
-
+print('Step Response G_theta')
 Fs_step = 1 / s                                             # system input Amplitude (1)/ s
 X3s_step = G_theta * Fs_step                                # system output the s domain x=G*F
 X3t_step = sym.inverse_laplace_transform(X3s_step, s, t)    # system output in the t domain
 sym.pprint(X3t_step)    # put in report
-print(sym.latex(X3t_step))
+print(sym.latex(X3t_step.simplify()))
 
 # 1.3. Frequency response (Shake) for G_theta: what happens to x3(t) when the input is
 # sin(omega*t) for some omega?
@@ -119,49 +123,50 @@ print(sym.latex(X3t_step))
 # the laplace transform of sin(t) is 1/*s**2 +1) which is what is used for F_S
 
 # G=x/F
-
-Fs_frequency = 1 / (s**2 + 1)
+print('Frequency Response G_theta')
+Fs_frequency = w / (s**2 + w**2)                    ###omega
 X3s_frequency = G_theta * Fs_frequency           # system output the s domain x=G*F
-X3t_frequency = sym.inverse_laplace_transform(X3s_frequency, s, t)  # system output in the t domain
+X3t_frequency = sym.inverse_laplace_transform(X3s_frequency, s, t, w)  # system output in the t domain
 sym.pprint(X3t_frequency.simplify())    # put in report
-#print(sym.latex(X3t_frequency))
+print(sym.latex(X3t_frequency.simplify()))
 
 # --------------------------------2. Impulse, Step and frequency Response of G_x ---------------------------------------
 
-G_x=(a*s**2-a*d+b*c)/(s**4-d*s**2)
+G_x=((a*s**2)-(a*d)+(b*c))/(s**4-(d*s**2))
 
 # the value of A (amplitude) is set to 1
 
 # 2.1. Impulse response for G_x
 # f_t = KICK (DIRAC PULSE) - impulse
+print('Impulse Response G_x')
 Fsx_impulse = 1                                 # Amplitude (A) = 1
-X3sx_impulse = G_x * Fsx_impulse                 # the inverse of G_x will be the the impulse response of the system
-X3tx_impulse = sym.inverse_laplace_transform(X3sx_impulse, s, t)  # system output t domain
-sym.pprint(X3tx_impulse)    # put in report
-print(sym.latex(X3tx_impulse))
+X1s_impulse = G_x * Fsx_impulse                 # the inverse of G_x will be the the impulse response of the system
+X1t_impulse = sym.inverse_laplace_transform(X1s_impulse, s, t)  # system output t domain
+sym.pprint(X1t_impulse.simplify())    # put in report
+print(sym.latex(X1t_impulse.simplify()))
 
 # 2.2. Step Response (PUSH) of G_x: what is the system response when
 
 # the input is a step pulse (Heaviside function)
 
 # G = X / F
-
-Fsx_step = 1 / s                                            # system input Amplitude (1)/ s
-X3sx_step = G_x * Fsx_step                                    # system output the s domain x=G*F
-X3tx_step = sym.inverse_laplace_transform(X3sx_step, s, t)    # system output in the t domain
-sym.pprint(X3tx_step)    # put in report
-print(sym.latex(X3tx_step))
+print('Step Response G_x')
+Fsx_step = 1 / s                                               # system input Amplitude (1)/ s
+X1s_step = G_x * Fsx_step                                    # system output the s domain x=G*F
+X1t_step = sym.inverse_laplace_transform(X1s_step, s, t)    # system output in the t domain
+sym.pprint(X1t_step.simplify())    # put in report
+print(sym.latex(X1t_step.simplify()))
 
 # 2.3. Frequency response (Shake) for G_x: what happens to x3(t) when the input is
 # sin(omega*t) for some omega?
 
-# omega was given the value of 1    therefore the input u(t) is sin(t)
-# the laplace transform of sin(t) is 1/*s**2 +1) which is what is used for F_S
+# omega was given the symbol of w    therefore the input u(t) is sin(wt)
+# the laplace transform of sin(t) is w/*s**2 +w++2) which is what is used for F_S
 
 # G=x/F
-
-Fsx_frequency = 1 / (s**2 + 1)
-X3sx_frequency = G_x * Fsx_frequency           # system output the s domain x=G*F
-X3tx_frequency = sym.inverse_laplace_transform(X3sx_frequency, s, t)  # system output in the t domain
-sym.pprint(X3tx_frequency.simplify())    # put in report
-print(sym.latex(X3t_frequency))
+print('Frequecny Response G_x')
+Fsx_frequency = w / (s**2 + w**2)
+X1s_frequency = G_x * Fsx_frequency           # system output the s domain x=G*F
+X1t_frequency = sym.inverse_laplace_transform(X1s_frequency, s,t,w)  # system output in the t domain
+sym.pprint(X1t_frequency.simplify())          # put in report
+print(sym.latex(X1t_frequency.simplify()))
