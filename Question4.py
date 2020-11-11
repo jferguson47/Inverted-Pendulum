@@ -72,11 +72,13 @@ b = -phi_deriv_x3_at_equlibrium
 c = -psi_deriv_F_at_equlibrium
 d = psi_deriv_x3_at_equlibrium
 
-
+# values from question
 M_value = 0.3
 m_value = 0.1
 ell_value = 0.35
 g_value = 9.81
+
+#substituting a, b, c, d values for values which include M, m, g, ell
 
 a_value = float(a.subs([(M, M_value), (m, m_value)]))                   # these need to be in float to specify type
 b_value = float(b.subs([(M, M_value), (m, m_value), (g, g_value)]))
@@ -87,8 +89,8 @@ d_value = float(d.subs([(M, M_value), (m, m_value), (g, g_value), (ell, ell_valu
 # ----- ONLY NUMERICAL VALUES --------
 
 import control as ctrl                  # works for transfer functions
-import matplotlib.pyplot as plt         #
-import numpy as np
+import matplotlib.pyplot as plt         # for plot
+import numpy as np                      # for maths
 n_points = 500
 t_final =0.2
 t_span =np.linspace(0, t_final, n_points)                       # array of time instants
@@ -100,18 +102,27 @@ Force_acting_on_pendulum=np.sin(100*np.square(t_span))          # input signal, 
 G_theta = ctrl.TransferFunction([-c_value], [1, 0, -d_value])   # numerator = -c
                                                                 # denominator 1s^2+0s -d which is [1,0,-d] in vector
 
-t_theta_out, y_theta_out, x_theta_out = ctrl.forced_response(G_theta, t_span,Force_acting_on_pendulum)
+t_theta_out, y_theta_out, x_theta_out = ctrl.forced_response(G_theta, t_span,Force_acting_on_pendulum)# frorced response
 
-plt.plot(t_theta_out, y_theta_out)
-plt.show()
+
+plt.plot(t_theta_out, y_theta_out)      # plots theta against time 
+plt.grid()                              # gives graph grid
+plt.xlabel('time(s)')                   # labels x axis 
+plt.ylabel('theta(rad)')                # labels y axis
+plt.show()                              # shows graph
 
 #--------------------Trajectories of x(t)------------------------
 
-G_x =ctrl.TransferFunction([a_value,0,a_value*d_value+b_value*c_value],[1,0,-d_value,0,0])
+G_x =ctrl.TransferFunction([a_value,0,a_value*d_value+b_value*c_value],[1,0,-d_value,0,0])  
+                                                            # numerator = as^2 -ad +bc which is [a,0,ad+bc]
+                                                            # denominator s^4-ds^2 -d which is [1,0,-d,0,0] in vector
 
-t_x_out, y_x_out, x_x_out = ctrl.forced_response(G_x, t_span,Force_acting_on_pendulum)
+t_x_out, y_x_out, x_x_out = ctrl.forced_response(G_x, t_span,Force_acting_on_pendulum)  # forced response
 
-plt.plot(t_x_out, y_x_out)
-plt.show()
+plt.plot(t_x_out, y_x_out)      # plots x against time 
+plt.grid()                      # gives graph grid
+plt.xlabel('time(s)')           # labels x axis 
+plt.ylabel("x(m)")              # labels y axis
+plt.show()                      # shows graph
 
 
