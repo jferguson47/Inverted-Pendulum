@@ -87,7 +87,7 @@ c_value = c.subs([(M, M_value), (m, m_value), (g, g_value), (ell, ell_value)])
 d_value = d.subs([(M, M_value), (m, m_value), (g, g_value), (ell, ell_value)])
 
 s, t = sym.symbols('s, t')
-c, d = sym.symbols('c, d', real=True, positive=True)
+a, b, c, d = sym.symbols('a, b, c, d', real=True, positive=True)
 w =sym.symbols('w', real=True)
 
 # --------------------------------1. Impulse, Step and frequency Response of G_theta -----------------------------------
